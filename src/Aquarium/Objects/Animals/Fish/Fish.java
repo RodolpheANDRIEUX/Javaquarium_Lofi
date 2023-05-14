@@ -5,30 +5,40 @@ import Aquarium.MainFrame;
 import Aquarium.Objects.Animals.Animal;
 import Aquarium.Objects.Food;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 public abstract class Fish extends Animal {
+    // const for formulas
     protected final int SPEED = 80;
-    protected final double TAIL = 2;
+    protected final double TAIL = 1.5;
 
-    private final FishTankRender fishTankRender;
-    protected double speed, orientation;
-    private double ripple = 0;
-    protected double direction;
+    // technical vars
+    final FishTankRender fishTankRender;
     protected long startTime;
+
+    // dynamic
+    protected double speed, orientation;
+    protected double direction;
+    private double ripple = 0;
+
+    // draw
     protected LinkedList<Point> tail;
     protected int tailLength;
 
     public Fish(FishTankRender fishTankRender) {
+        super();
         this.fishTankRender = fishTankRender;
     }
-
 
     public void move() {
         ripple = 0.6 * size * Math.sin(60 * age / (size * size / 40));
         orientation = direction + ripple;
+
+        if( fishTankRender.isFollowMode()){
+            target(fishTankRender.getMouseX(), fishTankRender.getMouseY(), 0.01);
+        }
 
         x += speed * Math.cos(Math.toRadians(orientation));
         y += speed * Math.sin(Math.toRadians(orientation));
@@ -39,10 +49,10 @@ public abstract class Fish extends Animal {
         double headY = y + size * Math.sin(Math.toRadians(orientation));
 
         if (headX <= 0 || headX >= MainFrame.WIDTH) {
-            direction = 180 - direction - ripple;
+            target(MainFrame.WIDTH/2, (int) y, 0.1);
         }
         if (headY <= 0 || headY >= MainFrame.HEIGHT) {
-            direction = -direction - ripple;
+            target((int) x, MainFrame.HEIGHT/2, 0.1);
         }
     }
 
@@ -71,55 +81,30 @@ public abstract class Fish extends Animal {
         int visionRadius = (int) (10 * size);
         int visionAngle = 200;
 
+        // pour chaque 2 degres d'angle de vision
         for (int i = -visionAngle / 2; i <= visionAngle / 2; i += 2) {
-            double directionX = Math.cos(Math.toRadians(direction + i));
-            double directionY = Math.sin(Math.toRadians(direction + i));
+            double directionX = Math.cos(Math.toRadians(orientation + i));
+            double directionY = Math.sin(Math.toRadians(orientation + i));
 
+
+            // tout les 4 pixels de distance
             for (int j = 1; j <= visionRadius; j += 4) {
                 int visionX = (int) (x + j * directionX);
                 int visionY = (int) (y + j * directionY);
 
-                // si on est dans le cadre
-                if (aquariumImage != null && visionX >= 0 && visionX < aquariumImage.getWidth() && visionY >= 0 && visionY < aquariumImage.getHeight()) {
-                    int pixelColor = aquariumImage.getRGB(visionX, visionY);
-                    Color color = new Color(pixelColor);
-
-                    if (color.equals(Color.RED)) {
-                        double reach = 10;
-                        double headX = size * Math.cos(Math.toRadians(orientation)) + x;
-                        double headY = size * Math.sin(Math.toRadians(orientation)) + y;
-                        if (headX - visionX <= reach && headX - visionX >= -reach && headY - visionY <= reach && headY - visionY >= -reach) {
-                            Food foodP = fishTankRender.eventEat(visionX, visionY);
-                            eat(foodP, fishTankRender.getFoodList());
-                            return;
-                        }
-                        target(visionX, visionY, 0.06);
-                        return;
-                    }
-
-                } else if (j > (visionAngle / 2) - 5 && j < (visionAngle / 2) + 5) { // si il y a le bord dans les 10° face au poisson
-                    avoid(visionX, visionY, 0.0025);
-                } else {
-                    break;
-                }
+                behave(aquariumImage, i, j, visionX, visionY);
             }
         }
     }
 
+    public abstract void behave(BufferedImage aquariumImage, int i, int j, int visionX, int visionY);
+
     public void eat(Food foodP, java.util.List<Food> foodList) {
-        if (size <= 50) {
-            size += 3;
-        }
-        tailLength = (int) (size * TAIL);
-        speed = SPEED / size;
         if (foodP != null && foodList != null) {
+            if (size <= 30) {
+                size ++;
+            }
             foodList.remove(foodP);
         }
     }
-
-    @Override
-    public abstract void paint(Graphics g);
-
-    @Override
-    public abstract void update(BufferedImage aquariumImage);
 }

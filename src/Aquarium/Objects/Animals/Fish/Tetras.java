@@ -7,52 +7,22 @@ import Aquarium.Objects.Food;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
+
+public class Tetras extends Fish {
+    private final Color color;
 
 
-public class CasualFish extends Fish {
-    private boolean speedUp;
-    private Color color;
-
-    public CasualFish(FishTankRender fishTankRender) {
+    public Tetras(FishTankRender fishTankRender) {
         super(fishTankRender);
-        this.x = (int) (Math.random() * (MainFrame.WIDTH - 100) + 50);
-        this.y = (int) (Math.random() * (MainFrame.HEIGHT - 100) + 50);
-        this.size = (Math.random() * 10) + 10;
+        this.x = (int) (Math.random() * MainFrame.WIDTH);
+        this.y = (int) (Math.random() * MainFrame.HEIGHT);
+        this.size = (Math.random() * 5) + 10;
         this.orientation = Math.random() * 360;
-        this.speed = SPEED / size;
+        this.speed = (SPEED-10) / size;
         this.direction = orientation;
         startTime = System.currentTimeMillis();
-        tail = new LinkedList<>();
-        tailLength = (int) (size * 0.5);
-        initColor();
-    }
-
-    public CasualFish(FishTankRender fishTankRender, int x, int y, double size, double orientation) {
-        super(fishTankRender);
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.speed = SPEED / size;
-        this.orientation = orientation;
-        this.direction = orientation;
-        startTime = System.currentTimeMillis();
-        tail = new LinkedList<>();
-        tailLength = (int) (size * 0.5);
-        initColor();
-    }
-
-    private void initColor(){
-        int rndColor =(int) (Math.random() * 4);
-        switch (rndColor){
-            case 1 -> color = new Color(255, 127, 125);
-            case 2 -> color = new Color(83, 167, 136);
-            case 3 -> color = new Color(83, 127, 255);
-            case 4 -> color = new Color(112, 211, 139);
-            default -> color = new Color(203, 255, 216);
-        }
+        color = new Color(203, 255, 216);
     }
 
     @Override
@@ -71,18 +41,16 @@ public class CasualFish extends Fish {
                     eat(foodP, fishTankRender.getFoodList());
                     return;
                 }
-                speedUp = true;
                 target(visionX, visionY, 0.06);
             } else if (pixelColor.equals(Color.BLUE)){
                 avoid(visionX, visionY, 0.002);
             }
-
         } else if (distance <= 300 && angle >  -5 && angle < 5) { // si il y a le bord dans les 10° face au poisson
             avoid(visionX, visionY, 0.002);
         }
     }
 
-    private void drawCasualFish(Graphics g, Color fillColor) {
+    private void drawTetras(Graphics g, Color fillColor) {
         int BodyX = (int) (size / 3 * Math.sin(Math.toRadians(orientation)));
         int BodyY = (int) (size / 3 * Math.cos(Math.toRadians(orientation)));
         int[] xPoints = {
@@ -97,24 +65,16 @@ public class CasualFish extends Fish {
         };
         g.setColor(fillColor);
         g.fillPolygon(xPoints, yPoints, 3);
-
-        if (!tail.isEmpty()) {
-            double i = size * 0.62;
-            for (Point p : tail) {
-                g.fillOval((int) (p.getX() - (i / 2)), (int) (p.getY() - (i / 2)), (int) i, (int) i);
-                i -= 0.25 + (speed / (0.3 * size));
-            }
-        }
     }
 
     @Override
     public void paintFishVision(Graphics2D gFish) {
-        drawCasualFish(gFish, Color.WHITE);
+        drawTetras(gFish, Color.WHITE);
     }
 
     @Override
     public void paint(Graphics g) {
-        drawCasualFish(g, color);
+        drawTetras(g, color);
     }
 
     @Override
@@ -122,7 +82,7 @@ public class CasualFish extends Fish {
 
         // update different values
         age = (System.currentTimeMillis() - startTime) / 1000.0;
-        tailLength = (int) (size * 0.6);
+        tailLength = (int) (size * TAIL);
 
         // behavior
         surroundingAnalysis(aquariumImage);
@@ -136,28 +96,15 @@ public class CasualFish extends Fish {
         } else if (direction < -180) {
             direction += 360;
         }
-        // horizontalité de mouvement
-        if (direction > 90 && direction <= 180 || direction > -90 && direction <= 0){
-            direction ++;
-        } else if (direction > 0 && direction <= 90 || direction > -180 && direction <= -90){
-            direction --;
-        }
 
         // actions
-        if(speedUp){
-            speed = SPEED * 1.5 / size;
-        } else {
-            speed = SPEED / size;
-        }
         move();
-        speedUp = false;
 
-        // tail update
-        tail.addFirst(new Point((int) x, (int) y));
-        if (tail.size() > tailLength) {
-            tail.removeLast();
-        }
+
     }
 
+    public void getTargeted(int x, int y, double weight){
+        target(x, y, weight);
+    }
 
 }

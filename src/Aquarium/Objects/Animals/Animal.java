@@ -1,8 +1,7 @@
 package Aquarium.Objects.Animals;
 
-import Aquarium.FishTank.FishTankRender;
-
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public abstract class Animal {
@@ -12,4 +11,7 @@ public abstract class Animal {
 
     public abstract void paint(Graphics g);
     public abstract void update(BufferedImage aquariumImage);
+
+    public abstract void paintFishVision(Graphics2D gFish);
+
 }

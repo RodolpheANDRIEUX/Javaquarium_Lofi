@@ -2,8 +2,6 @@ package Aquarium.FishTank;
 
 import Aquarium.MainFrame;
 import Aquarium.Objects.Animals.Animal;
-import Aquarium.Objects.Animals.Fish.CasualFish;
-import Aquarium.Objects.Animals.Jellyfish;
 import Aquarium.Objects.Food;
 
 import javax.imageio.ImageIO;
@@ -35,6 +33,9 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
     private boolean lightOn = true;
     private boolean pixelArtOn = true;
 
+    // actions
+    private boolean followMode = false;
+
     public FishTankRender() {
         food = new ArrayList<>();
         animals = new ArrayList<>();
@@ -42,13 +43,13 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
         addMouseMotionListener(this);
 
         try {
-            backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("assets/background.jpg")));
+            backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("assets/FishTankOn.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         int delay;
-        delay = 10;
+        delay = 1;
         ActionListener render = e -> {
             update();
             repaint();
@@ -80,7 +81,7 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
         }
 
         for (Animal animal : animals) {
-            animal.paint(gFish);
+            animal.paintFishVision(gFish);
         }
 
         gFish.dispose();
@@ -89,6 +90,7 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
 
     public void update(){
         BufferedImage aquariumImage = createFishVision();
+
         for (Animal animal : animals) {
             animal.update(aquariumImage);
         }
@@ -96,6 +98,7 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
             food.update();
         }
     }
+
 
     public void addFood(Food foodParticle) {
         food.add(foodParticle);
@@ -135,12 +138,17 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
         }
 
         if (lightOn){
-            GradientPaint gradient = new GradientPaint((float) getWidth() /2, 0, new Color(100, 255, 200, 26), (float) getWidth() /2, getHeight(), new Color(0, 0, 0, 0));
+            GradientPaint gradient = new GradientPaint((float) getWidth() /2, 0, new Color(203, 255, 216, 26), (float) getWidth() /2, getHeight(), new Color(0, 0, 0, 0));
             g2d.setPaint(gradient);
         } else {
             g2d.setPaint(new Color(0, 0, 0, 120));
         }
         g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        if(followMode){
+            g.setColor(new Color(255,20,20,128));
+            g.fillOval(mouseX-15, mouseY-15, 30, 30);
+        }
 
         if(pixelArtOn){
             g.drawImage(pixelArtAfterEffect(width, height, sceneImage, 3), 0, 0, null);
@@ -188,14 +196,23 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
     }
 
 
-    public void lightSwitch(){
+    public void lightSwitch() throws IOException {
         if (lightOn){
+            backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("assets/FishTankOff.png")));
             lightOn = false;
             return;
         }
+        backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("assets/FishTankOn.png")));
         lightOn = true;
     }
 
+    public void followSwitch() {
+        if (followMode){
+            followMode = false;
+            return;
+        }
+        followMode = true;
+    }
 
 
 
@@ -227,4 +244,16 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
         mouseY = e.getY();
     }
 
+
+    public boolean isFollowMode() {
+        return followMode;
+    }
+
+    public int getMouseX() {
+        return mouseX;
+    }
+
+    public int getMouseY() {
+        return mouseY;
+    }
 }

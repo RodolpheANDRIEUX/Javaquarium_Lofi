@@ -4,8 +4,9 @@ import Aquarium.MainFrame;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -13,8 +14,6 @@ public class Jellyfish extends Animal {
     private int jumpTimer = 0;
     private double direction = 0;
     private final Queue<Point> trail;
-    private final int trailDelay = 6;
-    private final int jumpFrequency = 40000;
 
     public Jellyfish() {
         this.x = (int) (Math.random() * (MainFrame.WIDTH-50) + 25);
@@ -25,7 +24,7 @@ public class Jellyfish extends Animal {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(new Color(150, 150, 190, 40));
+        g.setColor(new Color(203, 255, 216, 30));
         g.fillOval((int) x, (int) (y - size/2), (int) size, (int) (size/2));
 
         if (!trail.isEmpty()) {
@@ -37,6 +36,7 @@ public class Jellyfish extends Animal {
     @Override
     public void update(BufferedImage aquariumImage) {
         if (y >= 100){
+            int jumpFrequency = 40000;
             int jump = (int) (Math.random() * jumpFrequency / y);
             if (jump == 0 || y > MainFrame.HEIGHT - 10) {
                 jumpTimer = 10;
@@ -59,9 +59,15 @@ public class Jellyfish extends Animal {
         }
 
         trail.add(new Point((int) x, (int) y));
+        int trailDelay = 6;
         if (trail.size() > trailDelay) {
             trail.poll();
         }
+    }
+
+    @Override
+    public void paintFishVision(Graphics2D gFish) {
+
     }
 }
 

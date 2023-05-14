@@ -2,7 +2,7 @@ package Aquarium.Objects.Animals.Fish;
 
 import Aquarium.FishTank.FishTankRender;
 import Aquarium.MainFrame;
-import Aquarium.Objects.Food;
+
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,48 +11,22 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
+public class Shark extends Fish {
+    private final Color color;
 
-public class CasualFish extends Fish {
-    private boolean speedUp;
-    private Color color;
-
-    public CasualFish(FishTankRender fishTankRender) {
+    public Shark(FishTankRender fishTankRender) {
         super(fishTankRender);
-        this.x = (int) (Math.random() * (MainFrame.WIDTH - 100) + 50);
-        this.y = (int) (Math.random() * (MainFrame.HEIGHT - 100) + 50);
-        this.size = (Math.random() * 10) + 10;
+
+        this.x = (int) (Math.random() * (MainFrame.WIDTH));
+        this.y = (int) (Math.random() * (MainFrame.HEIGHT));
+        this.size = (Math.random() * 10) + 40;
         this.orientation = Math.random() * 360;
         this.speed = SPEED / size;
         this.direction = orientation;
         startTime = System.currentTimeMillis();
         tail = new LinkedList<>();
-        tailLength = (int) (size * 0.5);
-        initColor();
-    }
-
-    public CasualFish(FishTankRender fishTankRender, int x, int y, double size, double orientation) {
-        super(fishTankRender);
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.speed = SPEED / size;
-        this.orientation = orientation;
-        this.direction = orientation;
-        startTime = System.currentTimeMillis();
-        tail = new LinkedList<>();
-        tailLength = (int) (size * 0.5);
-        initColor();
-    }
-
-    private void initColor(){
-        int rndColor =(int) (Math.random() * 4);
-        switch (rndColor){
-            case 1 -> color = new Color(255, 127, 125);
-            case 2 -> color = new Color(83, 167, 136);
-            case 3 -> color = new Color(83, 127, 255);
-            case 4 -> color = new Color(112, 211, 139);
-            default -> color = new Color(203, 255, 216);
-        }
+        tailLength = (int) (size * TAIL);
+        color = new Color(160, 200, 255);
     }
 
     @Override
@@ -60,21 +34,19 @@ public class CasualFish extends Fish {
         // si on est dans le cadre
         if (aquariumImage != null && visionX >= 0 && visionX < aquariumImage.getWidth() && visionY >= 0 && visionY < aquariumImage.getHeight()) {
             int pixel = aquariumImage.getRGB(visionX, visionY);
-            Color pixelColor = new Color(pixel);
+            Color pixelColor =  new Color(pixel);
 
-            if (pixelColor.equals(Color.RED)) { // food
-                double reach = 10;
+            if (pixelColor.equals(Color.WHITE)) {
+                double reach = 9;
                 double headX = size * Math.cos(Math.toRadians(orientation)) + x;
                 double headY = size * Math.sin(Math.toRadians(orientation)) + y;
                 if (headX - visionX <= reach && headX - visionX >= -reach && headY - visionY <= reach && headY - visionY >= -reach) {
-                    Food foodP = fishTankRender.eventEat(visionX, visionY);
-                    eat(foodP, fishTankRender.getFoodList());
+//                    Food foodP = fishTankRender.eventEat(visionX, visionY);
+//                    eat(foodP, fishTankRender.getFoodList());
+                    // I dont want him to actually eat fishes, so it's empty here
                     return;
                 }
-                speedUp = true;
-                target(visionX, visionY, 0.06);
-            } else if (pixelColor.equals(Color.BLUE)){
-                avoid(visionX, visionY, 0.002);
+                target(visionX, visionY, 0.001);
             }
 
         } else if (distance <= 300 && angle >  -5 && angle < 5) { // si il y a le bord dans les 10° face au poisson
@@ -82,7 +54,7 @@ public class CasualFish extends Fish {
         }
     }
 
-    private void drawCasualFish(Graphics g, Color fillColor) {
+    private void drawShark(Graphics g, Color fillColor) {
         int BodyX = (int) (size / 3 * Math.sin(Math.toRadians(orientation)));
         int BodyY = (int) (size / 3 * Math.cos(Math.toRadians(orientation)));
         int[] xPoints = {
@@ -109,12 +81,12 @@ public class CasualFish extends Fish {
 
     @Override
     public void paintFishVision(Graphics2D gFish) {
-        drawCasualFish(gFish, Color.WHITE);
+        drawShark(gFish, Color.BLUE);
     }
 
     @Override
     public void paint(Graphics g) {
-        drawCasualFish(g, color);
+        drawShark(g, color);
     }
 
     @Override
@@ -122,7 +94,7 @@ public class CasualFish extends Fish {
 
         // update different values
         age = (System.currentTimeMillis() - startTime) / 1000.0;
-        tailLength = (int) (size * 0.6);
+        tailLength = (int) (size * TAIL);
 
         // behavior
         surroundingAnalysis(aquariumImage);
@@ -136,21 +108,9 @@ public class CasualFish extends Fish {
         } else if (direction < -180) {
             direction += 360;
         }
-        // horizontalité de mouvement
-        if (direction > 90 && direction <= 180 || direction > -90 && direction <= 0){
-            direction ++;
-        } else if (direction > 0 && direction <= 90 || direction > -180 && direction <= -90){
-            direction --;
-        }
 
         // actions
-        if(speedUp){
-            speed = SPEED * 1.5 / size;
-        } else {
-            speed = SPEED / size;
-        }
         move();
-        speedUp = false;
 
         // tail update
         tail.addFirst(new Point((int) x, (int) y));
@@ -158,6 +118,5 @@ public class CasualFish extends Fish {
             tail.removeLast();
         }
     }
-
 
 }
