@@ -1,29 +1,44 @@
-### IntelliJ IDEA ###
+# Fichiers compilés
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Fichiers/dossiers générés par l'IDE
+.idea/
+*.iml
+*.iws
+
+# Fichiers/dossiers générés lors de la construction
+target/
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+build/
+dist/
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# Fichiers de logs et autres fichiers temporaires
+*.log
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+# Autres fichiers/dossiers ignorés couramment
 .DS_Store
+Thumbs.db
+
+# Fichiers de configuration locaux (peuvent différer d'un utilisateur à l'autre)
+local.properties
+
+# Fichier généré par macOS
+*.swp
+*.swo
+
+# Fichiers temporaires pour IntelliJ
+*.tmp
+
+# Fichiers générés par Gradle (si vous utilisez Gradle)
+.gradle/
+
+# Fichiers générés par Maven (si vous utilisez Maven)
+log/
