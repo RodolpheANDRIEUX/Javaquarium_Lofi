@@ -10,7 +10,7 @@
 *.rar
 
 # Fichiers/dossiers générés par l'IDE
-.idea/
+.idea
 *.iml
 *.iws
 
