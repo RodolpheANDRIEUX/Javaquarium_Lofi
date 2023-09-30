@@ -1,6 +1,5 @@
 package Aquarium.FishTank;
 
-import Aquarium.MainFrame;
 import Aquarium.Objects.Animals.Animal;
 import Aquarium.Objects.Food;
 
@@ -121,12 +120,6 @@ public class FishTankRender extends JPanel implements MouseListener, MouseMotion
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
-
-        g2d.setColor(Color.WHITE);
-        g2d.drawLine(0, MainFrame.HEIGHT-1, MainFrame.WIDTH-1, MainFrame.HEIGHT-1);
-        g2d.drawLine(MainFrame.WIDTH-1, 0, MainFrame.WIDTH-1, MainFrame.HEIGHT-1);
-        g2d.drawLine(0 , 0, 0, MainFrame.HEIGHT);
-        g2d.drawLine(0, 0, MainFrame.WIDTH, 0);
 
         for (Food foodP : food) {
             g2d.setColor(Color.red);

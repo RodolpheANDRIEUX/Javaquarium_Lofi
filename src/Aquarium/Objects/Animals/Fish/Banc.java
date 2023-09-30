@@ -52,7 +52,7 @@ public class Banc extends Animal {
             cdNewDestination--;
             return;
         }
-        cdNewDestination = (int) (Math.random() * 200);
+        cdNewDestination = (int) (Math.random() * 150);
         randomX = (int) (Math.random() * MainFrame.WIDTH);
         randomY = (int) (Math.random() * MainFrame.HEIGHT);
     }

@@ -38,7 +38,6 @@ public class Tetras extends Fish {
                 double headY = size * Math.sin(Math.toRadians(orientation)) + y;
                 if (headX - visionX <= reach && headX - visionX >= -reach && headY - visionY <= reach && headY - visionY >= -reach) {
                     Food foodP = fishTankRender.eventEat(visionX, visionY);
-                    eat(foodP, fishTankRender.getFoodList());
                     return;
                 }
                 target(visionX, visionY, 0.06);
